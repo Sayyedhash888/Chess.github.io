@@ -4291,7 +4291,7 @@ class GameController {
             const url = `./assets/fairy/w${fairyMap[piece.type.toLowerCase()]}.png`;
             let filter = 'drop-shadow(0 2px 2px rgba(0,0,0,0.3))';
             if (piece.color === 'b') filter = 'invert(1) drop-shadow(0 -2px 2px rgba(0,0,0,0.3))';
-            html += `<div class="piece ${pieceClass} fairy-piece" data-square="${square}" style="background-image: url('${url}'); pointer-events:none; z-index:2; filter: ${filter};"></div>`;
+            html += `<div class="piece ${pieceClass} fairy-piece" data-square="${square}" style="background-image: url('${url}'); z-index:2; filter: ${filter};"></div>`;
           } else {
             const url = PIECE_URLS[piece.color][piece.type];
             html += `<div class="piece ${pieceClass}" data-square="${square}" style="background-image: url('${url}');"></div>`;
