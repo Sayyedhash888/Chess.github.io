@@ -2864,12 +2864,21 @@ class ChessEngine {
     this.startTime = 0;
     this.shouldStop = false;
   }
-
   evaluate(game) {
-    if (game.in_checkmate()) {
-      return game.turn() === 'w' ? -100000 : 100000;
+    const isFairy = window.gameController && window.gameController.isFairyGame;
+    const inCheck = isFairy 
+      ? window.gameController.isKingInCheck(game, game.turn()) 
+      : game.in_check();
+    const movesCount = this.getEngineMoves(game).length;
+    
+    if (movesCount === 0) {
+      if (inCheck) {
+        return game.turn() === 'w' ? -100000 : 100000;
+      }
+      return 0; // Stalemate
     }
-    if (game.in_draw() || game.in_stalemate() || game.in_threefold_repetition()) {
+    
+    if (!isFairy && (game.in_draw() || game.in_threefold_repetition())) {
       return 0;
     }
 
@@ -2880,8 +2889,13 @@ class ChessEngine {
 
     for (let r = 0; r < 8; r++) {
       for (let f = 0; f < 8; f++) {
-        const piece = board[r][f];
+        let piece = board[r][f];
         if (!piece) continue;
+
+        const sq = String.fromCharCode(97 + f) + (8 - r);
+        if (isFairy && window.gameController.fairyPieceMap && window.gameController.fairyPieceMap[sq]) {
+          piece = { ...piece, type: window.gameController.fairyPieceMap[sq] };
+        }
 
         const pieceVal = PIECE_VALUES[piece.type];
         totalMaterial += pieceVal;
@@ -2891,7 +2905,9 @@ class ChessEngine {
           tableType = 'k_end';
         }
         
-        const table = PST[tableType] || PST[piece.type];
+        const pstMapping = { c: 'r', j: 'n', d: 'b', z: 'q' };
+        const mappedType = pstMapping[piece.type] || piece.type;
+        const table = PST[tableType] || PST[mappedType] || PST.p;
         const pstVal = piece.color === 'w' 
           ? table[r][f] 
           : table[7 - r][f];
@@ -2909,12 +2925,7 @@ class ChessEngine {
     if (whiteBishops >= 2) score += 30;
     if (blackBishops >= 2) score -= 30;
 
-    const moves = this.getEngineMoves(game).length;
-    score += (game.turn() === 'w' ? 1 : -1) * moves * 2;
-
-    const inCheck = (window.gameController && window.gameController.isFairyGame) 
-      ? window.gameController.isKingInCheck(game, game.turn()) 
-      : game.in_check();
+    score += (game.turn() === 'w' ? 1 : -1) * movesCount * 2;
       
     if (inCheck) {
       score += (game.turn() === 'w' ? -50 : 50);
@@ -2940,7 +2951,6 @@ class ChessEngine {
   }
 
   quiesce(game, alpha, beta, maximizing, qDepth = 0) {
-    // Limit quiescence depth
     if (qDepth > 4) return this.evaluate(game);
     
     const standPat = this.evaluate(game);
@@ -2984,18 +2994,52 @@ class ChessEngine {
 
   makeEngineMove(game, move) {
     const savedFen = game.fen();
+    let oldFromFairy = null;
+    let oldToFairy = null;
+    
     if (window.gameController && window.gameController.isFairyGame) {
       game.remove(move.from);
-      game.put({ type: move.piece, color: move.color }, move.to);
+      
+      const lowerType = move.piece.toLowerCase();
+      const isFairy = ['c', 'j', 'd', 'z'].includes(lowerType);
+      const standardMap = { c: 'r', j: 'n', d: 'b', z: 'q' };
+      const typeToPut = isFairy ? standardMap[lowerType] : lowerType;
+      
+      game.put({ type: typeToPut, color: move.color }, move.to);
+      
+      const map = window.gameController.fairyPieceMap;
+      if (map) {
+        oldFromFairy = map[move.from] || null;
+        oldToFairy = map[move.to] || null;
+        if (oldFromFairy) {
+          map[move.to] = oldFromFairy;
+          delete map[move.from];
+        } else {
+          delete map[move.to];
+        }
+      }
     } else {
       game.move(move);
     }
-    return savedFen;
+    return { fen: savedFen, move, oldFromFairy, oldToFairy };
   }
 
-  undoEngineMove(game, savedFen) {
+  undoEngineMove(game, savedState) {
     if (window.gameController && window.gameController.isFairyGame) {
-      game.load(savedFen);
+      game.load(savedState.fen);
+      const map = window.gameController.fairyPieceMap;
+      if (map) {
+        if (savedState.oldFromFairy) {
+          map[savedState.move.from] = savedState.oldFromFairy;
+        } else {
+          delete map[savedState.move.from];
+        }
+        if (savedState.oldToFairy) {
+          map[savedState.move.to] = savedState.oldToFairy;
+        } else {
+          delete map[savedState.move.to];
+        }
+      }
     } else {
       game.undo();
     }
@@ -3181,8 +3225,16 @@ class ChessEngine {
     this.timeLimit = 800; // ★ 800ms max for eval
     this.shouldStop = false;
     
-    if (game.game_over()) {
-      if (game.in_checkmate()) {
+    const isFairy = window.gameController && window.gameController.isFairyGame;
+    const isGameOver = isFairy 
+      ? this.getEngineMoves(game).length === 0 
+      : game.game_over();
+      
+    if (isGameOver) {
+      const inCheck = isFairy 
+        ? window.gameController.isKingInCheck(game, game.turn()) 
+        : game.in_check();
+      if (inCheck) {
         return game.turn() === 'w' ? -1000 : 1000;
       }
       return 0;
@@ -7028,8 +7080,22 @@ class GameController {
   makeActiveGameMove(moveObj) {
     if (this.isFairyGame) {
       this.game.remove(moveObj.from);
-      const type = moveObj.promotion || moveObj.piece;
-      this.game.put({ type: type, color: moveObj.color }, moveObj.to);
+      const lowerType = (moveObj.promotion || moveObj.piece).toLowerCase();
+      const isFairy = ['c', 'j', 'd', 'z'].includes(lowerType);
+      const standardMap = { c: 'r', j: 'n', d: 'b', z: 'q' };
+      const typeToPut = isFairy ? standardMap[lowerType] : lowerType;
+      
+      this.game.put({ type: typeToPut, color: moveObj.color }, moveObj.to);
+      
+      // Update fairy piece map!
+      if (this.fairyPieceMap) {
+        if (isFairy) {
+          this.fairyPieceMap[moveObj.to] = lowerType;
+        } else {
+          delete this.fairyPieceMap[moveObj.to];
+        }
+        delete this.fairyPieceMap[moveObj.from];
+      }
       return moveObj;
     } else {
       return this.game.move(moveObj);
