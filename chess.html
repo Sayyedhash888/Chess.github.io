@@ -6761,11 +6761,15 @@ class GameController {
     // Find all active fairy pieces
     for (let r = 0; r < 8; r++) {
       for (let c = 0; c < 8; c++) {
-        const piece = board[r][c];
+        let piece = board[r][c];
         if (!piece || piece.color !== turn) continue;
         
         const sq = String.fromCharCode(97 + c) + (8 - r);
         if (square && sq !== square) continue;
+        
+        if (this.isFairyGame && this.fairyPieceMap && this.fairyPieceMap[sq]) {
+          piece = { ...piece, type: this.fairyPieceMap[sq] };
+        }
         
         if (['c', 'j', 'd', 'z'].includes(piece.type.toLowerCase())) {
           const pMoves = this.calculatePseudoLegalFairyMoves(game, sq, piece.type);
@@ -6779,7 +6783,9 @@ class GameController {
     }
     
     // Get standard moves and filter out standard moves that leave us in check from a fairy piece
-    let standardMoves = game.moves({ square: square, verbose: true });
+    const options = { verbose: true };
+    if (square) options.square = square;
+    let standardMoves = game.moves(options);
     standardMoves = standardMoves.filter(m => {
       return this.isFairyMoveLegal(game, m.from, m.to, m.piece);
     });
@@ -6874,17 +6880,39 @@ class GameController {
     const origFrom = game.get(from);
     const origTo = game.get(to);
     
-    // Temporarily make move
-    game.remove(from);
-    game.put({ type: type, color: turn }, to);
+    const lowerType = type.toLowerCase();
+    const isFairy = ['c', 'j', 'd', 'z'].includes(lowerType);
+    const standardMap = { c: 'r', j: 'n', d: 'b', z: 'q' };
+    const typeToPut = isFairy ? standardMap[lowerType] : lowerType;
     
-    // Check check
+    const oldFromFairy = this.fairyPieceMap ? this.fairyPieceMap[from] : null;
+    const oldToFairy = this.fairyPieceMap ? this.fairyPieceMap[to] : null;
+    
+    if (this.fairyPieceMap) {
+      if (isFairy) {
+        this.fairyPieceMap[to] = lowerType;
+      } else {
+        delete this.fairyPieceMap[to];
+      }
+      delete this.fairyPieceMap[from];
+    }
+    
+    game.remove(from);
+    game.put({ type: typeToPut, color: turn }, to);
+    
     const inCheck = this.isKingInCheck(game, turn);
     
-    // Undo
     game.remove(to);
     if (origTo) game.put(origTo, to);
-    game.put(origFrom, from);
+    if (origFrom) game.put(origFrom, from);
+    
+    if (this.fairyPieceMap) {
+      if (oldFromFairy) this.fairyPieceMap[from] = oldFromFairy;
+      else delete this.fairyPieceMap[from];
+      
+      if (oldToFairy) this.fairyPieceMap[to] = oldToFairy;
+      else delete this.fairyPieceMap[to];
+    }
     
     return !inCheck;
   }
@@ -6913,7 +6941,10 @@ class GameController {
       else game.remove(kingSq);
       
       return moves.some(m => {
-        const destPiece = game.get(m.to);
+        let destPiece = game.get(m.to);
+        if (destPiece && this.isFairyGame && this.fairyPieceMap && this.fairyPieceMap[m.to]) {
+          destPiece = { ...destPiece, type: this.fairyPieceMap[m.to] };
+        }
         return destPiece && destPiece.color === opponentColor && allowedTypes.includes(destPiece.type.toLowerCase());
       });
     };
@@ -6974,7 +7005,10 @@ class GameController {
       const nr = kingRank - 1 + dr;
       if (nf >= 0 && nf < 8 && nr >= 0 && nr < 8) {
         const targetSq = String.fromCharCode(97 + nf) + (nr + 1);
-        const p = game.get(targetSq);
+        let p = game.get(targetSq);
+        if (p && this.isFairyGame && this.fairyPieceMap && this.fairyPieceMap[targetSq]) {
+          p = { ...p, type: this.fairyPieceMap[targetSq] };
+        }
         if (p && p.color === opponentColor && p.type.toLowerCase() === 'j') {
           return true;
         }
