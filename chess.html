@@ -6841,11 +6841,15 @@ class GameController {
       }
     }
     
-    // Get standard moves and filter out standard moves that leave us in check from a fairy piece
+    // Get standard moves and filter out standard moves that leave us in check from a fairy piece,
+    // and also discard standard moves for squares that actually contain a fairy piece.
     const options = { verbose: true };
     if (square) options.square = square;
     let standardMoves = game.moves(options);
     standardMoves = standardMoves.filter(m => {
+      if (this.isFairyGame && this.fairyPieceMap && this.fairyPieceMap[m.from]) {
+        return false;
+      }
       return this.isFairyMoveLegal(game, m.from, m.to, m.piece);
     });
     
