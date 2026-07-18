@@ -2111,14 +2111,582 @@ body[data-theme="cyberpunk"] {
   color: #fff;
   border-color: var(--accent);
   box-shadow: 0 0 8px var(--accent-glow);
+/* ===== LANDING PAGE ===== */
+#landing-page {
+  position: fixed;
+  inset: 0;
+  z-index: 500;
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  overflow-x: hidden;
+  background:
+    radial-gradient(ellipse at 20% 20%, rgba(212, 168, 67, 0.18) 0%, transparent 50%),
+    radial-gradient(ellipse at 80% 80%, rgba(184, 75, 75, 0.15) 0%, transparent 50%),
+    linear-gradient(160deg, #1f100a 0%, #2a1206 40%, #1a0d08 100%);
+}
+
+#landing-page.hidden {
+  animation: landingExit 0.5s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+  pointer-events: none;
+}
+
+@keyframes landingExit {
+  to { opacity: 0; transform: scale(0.97) translateY(-20px); }
+}
+
+/* Landing navigation */
+.landing-nav {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 20px 40px;
+  position: relative;
+  z-index: 2;
+}
+
+.landing-logo {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.landing-logo-icon {
+  font-size: 32px;
+  background: linear-gradient(135deg, var(--accent-bright), var(--accent));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  filter: drop-shadow(0 2px 8px var(--accent-glow));
+}
+
+.landing-logo h1 {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 26px;
+  font-weight: 700;
+  background: linear-gradient(135deg, #fff 30%, var(--text-secondary));
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+.landing-nav-btn {
+  background: rgba(212,168,67,0.1);
+  border: 1px solid var(--border-strong);
+  color: var(--accent);
+  padding: 10px 24px;
+  border-radius: 50px;
+  font-family: 'Inter', sans-serif;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  letter-spacing: 0.5px;
+}
+
+.landing-nav-btn:hover {
+  background: rgba(212,168,67,0.2);
+  box-shadow: 0 0 20px var(--accent-glow);
+  transform: translateY(-1px);
+}
+
+/* Hero */
+.landing-hero {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  padding: 40px 24px 20px;
+  position: relative;
+  z-index: 1;
+}
+
+.landing-eyebrow {
+  font-size: 11px;
+  letter-spacing: 4px;
+  text-transform: uppercase;
+  color: var(--accent);
+  font-weight: 700;
+  margin-bottom: 20px;
+  padding: 6px 18px;
+  border: 1px solid rgba(212,168,67,0.3);
+  border-radius: 50px;
+  background: rgba(212,168,67,0.06);
+  display: inline-block;
+  animation: fadeSlideDown 0.6s ease both;
+}
+
+@keyframes fadeSlideDown {
+  from { opacity: 0; transform: translateY(-16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.landing-title {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(42px, 9vw, 96px);
+  font-weight: 700;
+  line-height: 1.05;
+  margin-bottom: 20px;
+  background: linear-gradient(160deg, #ffffff 0%, #f4e3c5 40%, var(--accent) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  animation: fadeSlideDown 0.7s 0.1s ease both;
+}
+
+.landing-subtitle {
+  font-size: clamp(15px, 2.5vw, 18px);
+  color: var(--text-secondary);
+  max-width: 540px;
+  line-height: 1.7;
+  margin-bottom: 40px;
+  animation: fadeSlideDown 0.7s 0.2s ease both;
+  opacity: 0;
+}
+
+.landing-cta-group {
+  display: flex;
+  gap: 14px;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin-bottom: 60px;
+  animation: fadeSlideDown 0.7s 0.3s ease both;
+  opacity: 0;
+}
+
+.landing-cta-primary {
+  background: linear-gradient(135deg, var(--accent), #b8902f);
+  border: none;
+  border-radius: 50px;
+  color: #1a1208;
+  font-family: 'Inter', sans-serif;
+  font-size: 15px;
+  font-weight: 700;
+  padding: 16px 36px;
+  cursor: pointer;
+  transition: all 0.3s;
+  box-shadow: 0 8px 32px rgba(212,168,67,0.4);
+  letter-spacing: 0.5px;
+}
+
+.landing-cta-primary:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 16px 48px rgba(212,168,67,0.5);
+  background: linear-gradient(135deg, var(--accent-bright), var(--accent));
+}
+
+.landing-cta-secondary {
+  background: rgba(255,255,255,0.05);
+  border: 1px solid var(--border-strong);
+  border-radius: 50px;
+  color: var(--text-primary);
+  font-family: 'Inter', sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  padding: 16px 36px;
+  cursor: pointer;
+  transition: all 0.3s;
+  backdrop-filter: blur(8px);
+}
+
+.landing-cta-secondary:hover {
+  border-color: var(--accent);
+  background: rgba(212,168,67,0.08);
+  transform: translateY(-2px);
+}
+
+/* Animated chess board preview */
+.landing-board-preview {
+  width: min(280px, 70vw);
+  aspect-ratio: 1;
+  display: grid;
+  grid-template-columns: repeat(8, 1fr);
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 0 0 3px var(--accent), 0 0 0 7px rgba(31,16,10,0.8), 0 32px 80px rgba(0,0,0,0.8);
+  margin-bottom: 60px;
+  animation: fadeSlideDown 0.8s 0.4s ease both;
+  opacity: 0;
+  flex-shrink: 0;
+}
+
+.landing-board-preview .mini-sq {
+  aspect-ratio: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: clamp(12px, 3vw, 20px);
+}
+
+.mini-sq.l { background: #f4e3c5; }
+.mini-sq.d { background: #b84b4b; }
+
+/* Feature cards */
+.landing-features {
+  padding: 0 24px 60px;
+  max-width: 1100px;
+  margin: 0 auto;
+  width: 100%;
+}
+
+.landing-features-title {
+  text-align: center;
+  font-family: 'Cormorant Garamond', serif;
+  font-size: clamp(26px, 5vw, 40px);
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 10px;
+}
+
+.landing-features-sub {
+  text-align: center;
+  color: var(--text-muted);
+  font-size: 14px;
+  margin-bottom: 40px;
+}
+
+.features-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 20px;
+}
+
+.feature-card {
+  background: rgba(42, 22, 16, 0.6);
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  padding: 28px 24px;
+  cursor: pointer;
+  transition: all 0.3s;
+  backdrop-filter: blur(12px);
+  position: relative;
+  overflow: hidden;
+}
+
+.feature-card::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0; right: 0;
+  height: 2px;
+  background: linear-gradient(90deg, transparent, var(--card-accent, var(--accent)), transparent);
+  opacity: 0;
+  transition: opacity 0.3s;
+}
+
+.feature-card:hover::before { opacity: 1; }
+
+.feature-card:hover {
+  border-color: var(--card-accent, var(--accent));
+  transform: translateY(-6px);
+  box-shadow: 0 20px 60px rgba(0,0,0,0.4), 0 0 30px rgba(212,168,67,0.08);
+  background: rgba(60,30,20,0.8);
+}
+
+.feature-icon {
+  font-size: 40px;
+  margin-bottom: 16px;
+  display: block;
+}
+
+.feature-card h3 {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--text-primary);
+  margin-bottom: 10px;
+}
+
+.feature-card p {
+  color: var(--text-secondary);
+  font-size: 14px;
+  line-height: 1.6;
+  margin-bottom: 20px;
+}
+
+.feature-card-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--card-accent, var(--accent));
+  transition: gap 0.2s;
+}
+
+.feature-card:hover .feature-card-btn { gap: 10px; }
+
+/* Stats row */
+.landing-stats {
+  display: flex;
+  justify-content: center;
+  gap: 40px;
+  flex-wrap: wrap;
+  padding: 40px 24px;
+  border-top: 1px solid var(--border);
+  border-bottom: 1px solid var(--border);
+  margin: 0 0 60px;
+}
+
+.landing-stat {
+  text-align: center;
+}
+
+.landing-stat-num {
+  font-family: 'Cormorant Garamond', serif;
+  font-size: 42px;
+  font-weight: 700;
+  color: var(--accent);
+  line-height: 1;
+}
+
+.landing-stat-label {
+  font-size: 12px;
+  color: var(--text-muted);
+  letter-spacing: 1.5px;
+  text-transform: uppercase;
+  margin-top: 4px;
+}
+
+/* ===== FULL MOBILE RESPONSIVE OVERHAUL ===== */
+
+/* Tablet: 768px–1100px */
+@media (max-width: 1100px) {
+  .main-layout {
+    grid-template-columns: 1fr;
+    max-width: 640px;
+    padding: 20px;
+    gap: 16px;
+  }
+
+  .eval-section {
+    display: none;
+  }
+
+  .eval-bar-container { display: none; }
+  .eval-bar-vertical { display: none; }
+
+  /* Move right panel BELOW board */
+  .main-layout {
+    display: flex;
+    flex-direction: column;
+  }
+
+  #right-panel {
+    order: 3;
+  }
+
+  .board-section {
+    order: 2;
+  }
+}
+
+/* Phone: 0–768px */
+@media (max-width: 768px) {
+  /* Header */
+  header {
+    padding: 12px 16px;
+    gap: 8px;
+  }
+
+  .logo h1 { font-size: 20px; }
+  .logo .tagline { display: none; }
+  .logo-icon { font-size: 28px; }
+
+  .header-actions { gap: 8px; }
+  .header-actions .btn span:last-child { display: none; }
+  .header-actions .btn { padding: 8px 12px; font-size: 12px; }
+  .header-actions .btn-primary { padding: 8px 14px; }
+
+  /* Main layout */
+  .main-layout {
+    padding: 12px;
+    gap: 12px;
+  }
+
+  /* Board */
+  .board-container {
+    width: min(95vw, 480px) !important;
+    margin: 4px;
+  }
+
+  .board-wrapper {
+    margin-top: 24px;
+  }
+
+  .thinking-indicator {
+    top: -30px;
+    font-size: 11px;
+    padding: 5px 12px;
+  }
+
+  /* Player cards */
+  .player-card { padding: 10px 14px; }
+  .player-clock { font-size: 15px; }
+  .player-name { font-size: 13px; }
+
+  /* Status bar */
+  .status-bar { font-size: 13px; padding: 10px 16px; }
+
+  /* Controls */
+  .controls-panel { padding: 12px; }
+  .controls-grid { grid-template-columns: 1fr 1fr; gap: 8px; }
+  .controls-grid .btn { font-size: 12px; padding: 10px 8px; }
+
+  /* Move history */
+  .move-list { max-height: 200px; }
+
+  /* Modal */
+  .modal-overlay { padding: 12px; }
+  .modal {
+    padding: 20px;
+    border-radius: 12px;
+    max-height: 95vh;
+  }
+  .modal h2 { font-size: 22px; }
+  .modal.large { max-width: 100%; }
+
+  .modal-tabs {
+    gap: 4px;
+    flex-wrap: wrap;
+  }
+  .modal-tab { font-size: 12px; padding: 6px 12px; }
+
+  .bot-grid { grid-template-columns: 1fr 1fr; }
+  .color-options { gap: 8px; }
+  .color-option { padding: 12px 10px; }
+  .time-options { grid-template-columns: repeat(3, 1fr); gap: 6px; }
+  .time-option { padding: 10px 8px; }
+
+  /* Toast */
+  .toast { bottom: 20px; font-size: 12px; padding: 10px 20px; }
+
+  /* Landing page */
+  .landing-nav { padding: 14px 20px; }
+  .landing-logo h1 { font-size: 20px; }
+  .landing-logo-icon { font-size: 26px; }
+  .landing-nav-btn { padding: 8px 18px; font-size: 12px; }
+
+  .landing-hero { padding: 24px 16px 10px; }
+  .landing-cta-group { gap: 10px; }
+  .landing-cta-primary, .landing-cta-secondary { padding: 14px 28px; font-size: 14px; }
+
+  .features-grid { grid-template-columns: 1fr; gap: 14px; }
+  .feature-card { padding: 22px 18px; }
+
+  .landing-stats { gap: 24px; padding: 28px 16px; }
+  .landing-stat-num { font-size: 32px; }
+
+  /* Review panel */
+  .review-commentary { padding: 12px; }
+  .review-nav { gap: 8px; }
+  .review-nav button { width: 36px; height: 36px; font-size: 14px; }
+}
+
+/* Very small phones: < 380px */
+@media (max-width: 380px) {
+  .board-container { width: 96vw !important; }
+  .landing-title { font-size: 36px; }
+  .header-actions { gap: 6px; }
+  .header-actions .btn { padding: 7px 10px; }
+  .bot-grid { grid-template-columns: 1fr; }
+  .time-options { grid-template-columns: 1fr 1fr; }
+  .modal { padding: 14px; }
+  .modal-tab { font-size: 11px; padding: 5px 8px; }
 }
 </style>
 </head>
 <body>
 
+<!-- ===== LANDING PAGE ===== -->
+<div id="landing-page">
+  <!-- Navigation -->
+  <nav class="landing-nav">
+    <div class="landing-logo">
+      <span class="landing-logo-icon">♚</span>
+      <h1>Chess Master</h1>
+    </div>
+    <button class="landing-nav-btn" id="landing-open-game">Continue Playing →</button>
+  </nav>
+
+  <!-- Hero -->
+  <section class="landing-hero">
+    <span class="landing-eyebrow">♟ AI-Powered Chess Platform</span>
+    <h2 class="landing-title">Master the Board.<br>Outsmart the Machine.</h2>
+    <p class="landing-subtitle">
+      Play against AI opponents from beginner to grandmaster level,<br>
+      explore exotic Fairy Chess pieces, and analyze your games with a built-in coach.
+    </p>
+    <div class="landing-cta-group">
+      <button class="landing-cta-primary" id="landing-play-now">⚔ Play Now</button>
+      <button class="landing-cta-secondary" id="landing-play-fairy">✨ Try Fairy Chess</button>
+      <button class="landing-cta-secondary" id="landing-analyze">📊 Analyze Games</button>
+    </div>
+
+    <!-- Miniature Board Preview -->
+    <div class="landing-board-preview" id="landing-board-preview">
+      <!-- Generated by JS -->
+    </div>
+  </section>
+
+  <!-- Stats -->
+  <div class="landing-stats">
+    <div class="landing-stat">
+      <div class="landing-stat-num">5</div>
+      <div class="landing-stat-label">AI Opponents</div>
+    </div>
+    <div class="landing-stat">
+      <div class="landing-stat-num">4</div>
+      <div class="landing-stat-label">Fairy Pieces</div>
+    </div>
+    <div class="landing-stat">
+      <div class="landing-stat-num">∞</div>
+      <div class="landing-stat-label">Time Formats</div>
+    </div>
+    <div class="landing-stat">
+      <div class="landing-stat-num">AI</div>
+      <div class="landing-stat-label">Coach Included</div>
+    </div>
+  </div>
+
+  <!-- Feature Cards -->
+  <section class="landing-features">
+    <h2 class="landing-features-title">Everything You Need to Improve</h2>
+    <p class="landing-features-sub">From casual games to deep analysis — all in one place.</p>
+
+    <div class="features-grid">
+      <div class="feature-card" id="fc-play" style="--card-accent: #d4a843;">
+        <span class="feature-icon">⚔️</span>
+        <h3>Play vs AI</h3>
+        <p>Challenge 5 unique bots from Pixel Pawn (beginner) to the Grandmaster — each with their own personality and play style. Set any time control.</p>
+        <span class="feature-card-btn">Choose Opponent →</span>
+      </div>
+      <div class="feature-card" id="fc-fairy" style="--card-accent: #9b59b6;">
+        <span class="feature-icon">🔮</span>
+        <h3>Fairy Chess</h3>
+        <p>Play with exotic pieces: the Chancellor (Rook+Knight), Zebra leaper, Dragon (Bishop+Knight), and the all-powerful Amazon. A whole new game.</p>
+        <span class="feature-card-btn">Enter Fairy Realm →</span>
+      </div>
+      <div class="feature-card" id="fc-analyze" style="--card-accent: #3498db;">
+        <span class="feature-icon">📊</span>
+        <h3>Game Analysis</h3>
+        <p>Import your Chess.com games and get a full review with move-by-move accuracy ratings, brilliant moves, blunders, and AI coaching commentary.</p>
+        <span class="feature-card-btn">Analyze My Games →</span>
+      </div>
+      <div class="feature-card" id="fc-editor" style="--card-accent: #2ecc71;">
+        <span class="feature-icon">🎨</span>
+        <h3>Board Editor</h3>
+        <p>Build any custom position from scratch. Place pieces exactly where you want, then play or analyze that specific position against the AI.</p>
+        <span class="feature-card-btn">Open Editor →</span>
+      </div>
+    </div>
+  </section>
+</div>
+
 <!-- Header -->
 <header>
-  <div class="logo">
+  <div class="logo" id="header-logo" style="cursor:pointer;" title="Return to Landing Page">
     <span class="logo-icon">♚</span>
     <div>
       <h1>Chess Master</h1>
@@ -2321,7 +2889,7 @@ body[data-theme="cyberpunk"] {
 </div>
 
 <!-- New Game Modal -->
-<div class="modal-overlay active" id="new-game-modal">
+<div class="modal-overlay" id="new-game-modal">
   <div class="modal large">
     <h2>New Game & Analysis</h2>
     <p class="modal-subtitle" style="margin-bottom:16px;">Configure a local match or import your online games from Chess.com</p>
@@ -3785,6 +4353,113 @@ class GameController {
           window.speechSynthesis.cancel(); // Stop talking
         }
       });
+    }
+
+    // Landing page CTAs and elements wiring
+    const landing = document.getElementById('landing-page');
+    if (landing) {
+      this.renderLandingBoardPreview();
+
+      document.getElementById('landing-open-game').addEventListener('click', () => {
+        landing.classList.add('hidden');
+      });
+
+      document.getElementById('landing-play-now').addEventListener('click', () => {
+        landing.classList.add('hidden');
+        document.getElementById('new-game-modal').classList.add('active');
+        const playTab = document.querySelector('.modal-tab[data-tab="vanilla"]');
+        if (playTab) playTab.click();
+      });
+
+      document.getElementById('landing-play-fairy').addEventListener('click', () => {
+        landing.classList.add('hidden');
+        document.getElementById('new-game-modal').classList.add('active');
+        const fairyTab = document.querySelector('.modal-tab[data-tab="fairy"]');
+        if (fairyTab) fairyTab.click();
+      });
+
+      document.getElementById('landing-analyze').addEventListener('click', () => {
+        landing.classList.add('hidden');
+        document.getElementById('new-game-modal').classList.add('active');
+        const analysisTab = document.querySelector('.modal-tab[data-tab="analysis"]');
+        if (analysisTab) analysisTab.click();
+      });
+
+      // Feature cards
+      document.getElementById('fc-play').addEventListener('click', () => {
+        landing.classList.add('hidden');
+        document.getElementById('new-game-modal').classList.add('active');
+        const playTab = document.querySelector('.modal-tab[data-tab="vanilla"]');
+        if (playTab) playTab.click();
+      });
+
+      document.getElementById('fc-fairy').addEventListener('click', () => {
+        landing.classList.add('hidden');
+        document.getElementById('new-game-modal').classList.add('active');
+        const fairyTab = document.querySelector('.modal-tab[data-tab="fairy"]');
+        if (fairyTab) fairyTab.click();
+      });
+
+      document.getElementById('fc-analyze').addEventListener('click', () => {
+        landing.classList.add('hidden');
+        document.getElementById('new-game-modal').classList.add('active');
+        const analysisTab = document.querySelector('.modal-tab[data-tab="analysis"]');
+        if (analysisTab) analysisTab.click();
+      });
+
+      document.getElementById('fc-editor').addEventListener('click', () => {
+        landing.classList.add('hidden');
+        this.isFairyGame = false;
+        const fairyRow = document.getElementById('editor-palette-fairy-row');
+        if (fairyRow) fairyRow.style.display = 'none';
+        this.startBoardEditor();
+      });
+    }
+
+    // Header Logo returns to Landing Page
+    const headerLogo = document.getElementById('header-logo');
+    if (headerLogo) {
+      headerLogo.addEventListener('click', () => {
+        if (landing) {
+          landing.classList.remove('hidden');
+        }
+      });
+    }
+  }
+
+  renderLandingBoardPreview() {
+    const preview = document.getElementById('landing-board-preview');
+    if (!preview) return;
+    preview.innerHTML = '';
+    
+    const layout = [
+      ['R','N','B','Q','K','B','N','R'],
+      ['P','P','P','P','P','P','P','P'],
+      ['','','','','','','',''],
+      ['','','','','','','',''],
+      ['','','','','','','',''],
+      ['','','','','','','',''],
+      ['p','p','p','p','p','p','p','p'],
+      ['r','n','b','q','k','b','n','r']
+    ];
+    
+    const symbols = {
+      'R': '♖', 'N': '♘', 'B': '♗', 'Q': '♕', 'K': '♔', 'P': '♙',
+      'r': '♜', 'n': '♞', 'b': '♝', 'q': '♛', 'k': '♚', 'p': '♟'
+    };
+
+    for (let r = 0; r < 8; r++) {
+      for (let c = 0; c < 8; c++) {
+        const sq = document.createElement('div');
+        sq.className = `mini-sq ${(r + c) % 2 === 0 ? 'l' : 'd'}`;
+        
+        const piece = layout[r][c];
+        if (piece) {
+          sq.textContent = symbols[piece];
+          sq.style.color = piece === piece.toUpperCase() ? '#111' : '#fff';
+        }
+        preview.appendChild(sq);
+      }
     }
   }
 
