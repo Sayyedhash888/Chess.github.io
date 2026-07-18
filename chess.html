@@ -4319,16 +4319,28 @@ class GameController {
         if (this.editorActive) {
           if (this.selectedEditorPiece === 'erase') {
             this.game.remove(square);
+            if (this.fairyPieceMap) delete this.fairyPieceMap[square];
             this.selectedSquare = null;
           } else {
+            const lowerType = this.selectedEditorPiece.toLowerCase();
+            const isFairy = ['c', 'j', 'd', 'z'].includes(lowerType);
+            const standardMap = { c: 'r', j: 'n', d: 'b', z: 'q' };
+            const typeToPut = isFairy ? standardMap[lowerType] : lowerType;
+            const isWhite = this.selectedEditorPiece === this.selectedEditorPiece.toUpperCase();
+
             if (this.selectedSquare) {
               if (this.selectedSquare === square) {
                 // Clicked same square twice: overwrite with selected palette piece
-                const isWhite = this.selectedEditorPiece === this.selectedEditorPiece.toUpperCase();
                 this.game.put({
-                  type: this.selectedEditorPiece.toLowerCase(),
+                  type: typeToPut,
                   color: isWhite ? 'w' : 'b'
                 }, square);
+                if (isFairy) {
+                  if (!this.fairyPieceMap) this.fairyPieceMap = {};
+                  this.fairyPieceMap[square] = lowerType;
+                } else {
+                  if (this.fairyPieceMap) delete this.fairyPieceMap[square];
+                }
                 this.selectedSquare = null;
               } else {
                 // Move piece (Pick & Drop)
@@ -4336,6 +4348,12 @@ class GameController {
                 if (p) {
                   this.game.remove(this.selectedSquare);
                   this.game.put(p, square);
+                  if (this.fairyPieceMap && this.fairyPieceMap[this.selectedSquare]) {
+                    this.fairyPieceMap[square] = this.fairyPieceMap[this.selectedSquare];
+                    delete this.fairyPieceMap[this.selectedSquare];
+                  } else if (this.fairyPieceMap) {
+                    delete this.fairyPieceMap[square];
+                  }
                 }
                 this.selectedSquare = null;
               }
@@ -4346,11 +4364,16 @@ class GameController {
                 this.selectedSquare = square;
               } else {
                 // Place palette piece on empty square
-                const isWhite = this.selectedEditorPiece === this.selectedEditorPiece.toUpperCase();
                 this.game.put({
-                  type: this.selectedEditorPiece.toLowerCase(),
+                  type: typeToPut,
                   color: isWhite ? 'w' : 'b'
                 }, square);
+                if (isFairy) {
+                  if (!this.fairyPieceMap) this.fairyPieceMap = {};
+                  this.fairyPieceMap[square] = lowerType;
+                } else {
+                  if (this.fairyPieceMap) delete this.fairyPieceMap[square];
+                }
               }
             }
           }
@@ -6376,11 +6399,24 @@ class GameController {
 
           const targetSquare = target?.closest('.square')?.dataset.square;
           if (targetSquare) {
+            const lowerType = piece.toLowerCase();
+            const isFairy = ['c', 'j', 'd', 'z'].includes(lowerType);
+            const standardMap = { c: 'r', j: 'n', d: 'b', z: 'q' };
+            const typeToPut = isFairy ? standardMap[lowerType] : lowerType;
             const isWhite = piece === piece.toUpperCase();
+            
             this.game.put({
-              type: piece.toLowerCase(),
+              type: typeToPut,
               color: isWhite ? 'w' : 'b'
             }, targetSquare);
+
+            if (isFairy) {
+              if (!this.fairyPieceMap) this.fairyPieceMap = {};
+              this.fairyPieceMap[targetSquare] = lowerType;
+            } else {
+              if (this.fairyPieceMap) delete this.fairyPieceMap[targetSquare];
+            }
+            
             this.renderBoard();
           }
         };
@@ -6447,6 +6483,7 @@ class GameController {
       btnClear.addEventListener('click', (e) => {
         e.preventDefault();
         this.game.clear();
+        this.fairyPieceMap = {};
         this.renderBoard();
       });
     }
@@ -6456,7 +6493,13 @@ class GameController {
     if (btnReset) {
       btnReset.addEventListener('click', (e) => {
         e.preventDefault();
-        this.game = new Chess();
+        if (this.isFairyGame) {
+          const loadFEN = this.setupFairyGameFromFEN('cjdzkdjc/pppppppp/8/8/8/8/PPPPPPPP/CJDZKDJC w - - 0 1');
+          this.game = new Chess(loadFEN);
+        } else {
+          this.game = new Chess();
+          this.fairyPieceMap = {};
+        }
         this.renderBoard();
       });
     }
